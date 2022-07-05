@@ -3,7 +3,7 @@
 require 'pry-byebug'
 
 def random_code
-  [rand(1..6), rand(1..6), rand(1..6), rand(1..6)].join.to_i
+  [rand(1..6), rand(1..6), rand(1..6), rand(1..6)].join
 end
 
 # CodeBreaker class
@@ -36,9 +36,9 @@ class Game
   private
 
   def code_breaker_move
-    @turn += 1 
-    puts @code 
-    move = gets.chomp.to_i
+    @turn += 1
+    puts @code
+    move = gets.chomp
     if move == @code
       @cracked = true
     else
@@ -48,8 +48,8 @@ class Game
   end
 
   def calculate_hints(move)
-    code_array = convert_integer_to_array(@code)
-    move_array = convert_integer_to_array(move)
+    code_array = convert_string_to_array(@code)
+    move_array = convert_string_to_array(move)
 
     hints = { correct: 0, close: 0 }
 
@@ -58,17 +58,20 @@ class Game
     common_values.each do |common_value|
       indices_in_code = indices(code_array, common_value)
       indices_in_move = indices(move_array, common_value)
-      if indices_in_code == indices_in_move
-        hints[:correct] += indices_in_code.length
-      else
-        common_indices = common_values_in_two_arrays(indices_in_code, indices_in_move)
-        # binding.pry
-        hints[:correct] += common_indices.length
-        hints[:close] += indices_in_move.length - common_indices.length
-        hints[:close] = 0 if hints[:close] < 0 
-      end
+      calculate_hints_helper(hints, indices_in_code, indices_in_move)
     end
     hints
+  end
+
+  def calculate_hints_helper(hints, indices_in_code, indices_in_move)
+    if indices_in_code == indices_in_move
+      hints[:correct] += indices_in_code.length
+    else
+      common_indices = common_values_in_two_arrays(indices_in_code, indices_in_move)
+      hints[:correct] += common_indices.length
+      hints[:close] += [indices_in_code, indices_in_move].min_by(&:size).length - common_indices.length
+      hints[:close] = 0 if (hints[:close]).negative?
+    end
   end
 
   def indices(array, element)
@@ -83,8 +86,8 @@ class Game
     @cracked || @turn >= 12
   end
 
-  def convert_integer_to_array(integer)
-    integer.to_s.split('').map(&:to_i)
+  def convert_string_to_array(string)
+    string.split('').map(&:to_i)
   end
 end
 
