@@ -22,7 +22,7 @@ class HumanAsCodeBreaker
   include Display
 
   def initialize
-    @player = CodeBreaker.new('human')
+    @player = 'Human'
     @code = random_code
     @cracked = nil
     @turn = 1
@@ -112,6 +112,57 @@ class HumanAsCodeBreaker
 
   def convert_string_to_array(string)
     string.split('').map(&:to_i)
+  end
+end
+
+# Game to play when human is the codemaker
+class HumanAsCodeMaker
+  include Display
+
+  def initialize
+    @player = 'Computer'
+    @code = codemaker_move
+    @cracked = nil
+    @turn = 1
+  end
+
+  def start
+    code_breaker_move until game_end?
+    if @cracked
+      puts_player_won(@player)
+    else
+      puts_player_out_of_moves
+    end
+  end
+
+  private
+
+  def code_breaker_move
+    @turn += 1
+    if '0000'  == @code
+      @cracked = true
+    else
+      @cracked = false
+    end
+  end
+
+  def codemaker_move
+    move = ''
+    first_move = true
+    until valid_move(move)
+      puts first_move ? 'Create a code!' : 'Invalid, create a code!'
+      move = gets.chomp
+      first_move = false
+    end
+    move
+  end
+
+  def valid_move(move)
+    move.length == 4 && move.scan(/\D/).empty?
+  end
+
+  def game_end?
+    @cracked || @turn >= 12
   end
 end
 
