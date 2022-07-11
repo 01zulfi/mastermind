@@ -34,13 +34,12 @@ class HumanCodeBreaker
   def code_breaker_move
     puts_turn(@turn)
     @turn += 1
-    puts @code
     move = code_breaker_move_from_terminal
     if move == @code
       @cracked = true
     else
       @cracked = false
-      puts hints(@code, move)
+      puts puts_hints(hints(@code, move))
     end
   end
 
@@ -48,7 +47,7 @@ class HumanCodeBreaker
     move = ''
     first_move = true
     until valid_move(move)
-      puts first_move ? 'Make your move!' : 'Invalid, make your move!'
+      first_move ? puts_make_your_move : puts_invalid_made_your_move 
       move = gets.chomp
       first_move = false
     end

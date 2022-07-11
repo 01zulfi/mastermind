@@ -6,7 +6,10 @@ require './computer_code_breaker'
 
 # Game
 class Game
+  include Display
+
   def initialize
+    puts_intro_and_rules
     @game_mode = game_mode_selection
   end
 
@@ -21,9 +24,7 @@ class Game
   private
 
   def game_mode_selection
-    puts 'Who do you want to play as?'
-    puts 'Enter 1 to play as Code Breaker'
-    puts 'Enter 2 to play as Code Maker'
+    puts_initial_prompt
 
     selection = ''
     selection = gets.chomp until valid_selection(selection)

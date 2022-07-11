@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require './hints'
+require './display'
 
 # game to play when computer is code breaker
 class ComputerCodeBreaker
   include Hints
+  include Display
 
   def initialize
     @code_breaker = 'Computer'
@@ -19,9 +21,9 @@ class ComputerCodeBreaker
   def start
     code_breaker_move
     if @turn >= 12
-      puts 'Computer could not solve'
+      puts_computer_could_not_solve
     else
-      puts "Computer solved in #{@turn} turns"
+      puts_computer_won(@code, @turn)
     end
   end
 
@@ -29,15 +31,16 @@ class ComputerCodeBreaker
 
   def code_breaker_move
     until @cracked
+      break if @turn >= 12
+
       @turn += 1
       current_hint = hints(@code, @current_guess)
-      puts "current_guess #{@current_guess}"
-      puts current_hint
+      puts_current_guess(@current_guess)
+      puts_hints(current_hint)
       @set = @set.select { |element| keep_element(current_hint, hints(@code, element)) }
       @current_guess = @set.empty? ? @current_guess : @set[0]
       @cracked = true if @code == @current_guess
     end
-    puts "Computer won: Code is #{@current_guess}"
   end
 
   def keep_element(current_hint, hint)
@@ -54,7 +57,7 @@ class ComputerCodeBreaker
     code = ''
     first_try = true
     until valid_code(code)
-      puts first_try ? 'Enter a code for computer to break' : 'Invalid, enter again'
+      first_try ? puts_prompt_for_code_breaker : puts_prompt_for_code_breaker_invalid
       code = gets.chomp
       first_try = false
     end
